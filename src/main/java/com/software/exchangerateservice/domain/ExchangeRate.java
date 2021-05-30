@@ -1,31 +1,25 @@
 package com.software.exchangerateservice.domain;
 
 public class ExchangeRate {
-    private Currency fromCurrency = new Currency("EUR", "Euro");
-    private Currency toCurrency = new Currency("USD", "US-Dollar");;
-    private Double exchangeRate = 1.1d;
+    private Currency fromCurrency;
+    private Currency toCurrency;
+    private Double exchangeRate;
+
+    public ExchangeRate(String fromCurrency, String toCurrency, Double exchangeRate) {
+        this.fromCurrency = new Currency(fromCurrency);
+        this.toCurrency = new Currency(toCurrency);
+        this.exchangeRate = exchangeRate;
+    }
 
     public Currency getFromCurrency() {
         return fromCurrency;
-    }
-
-    public void setFromCurrency(Currency fromCurrency) {
-        this.fromCurrency = fromCurrency;
     }
 
     public Currency getToCurrency() {
         return toCurrency;
     }
 
-    public void setToCurrency(Currency toCurrency) {
-        this.toCurrency = toCurrency;
-    }
-
     public Double getExchangeRate() {
         return exchangeRate;
-    }
-
-    public void setExchangeRate(Double exchangeRate) {
-        this.exchangeRate = exchangeRate;
     }
 }
