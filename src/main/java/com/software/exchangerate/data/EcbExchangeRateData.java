@@ -1,4 +1,4 @@
-package com.software.exchangerateservice.data;
+package com.software.exchangerate.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,10 +11,10 @@ import java.util.Map;
 @JsonIgnoreProperties(value = {"subject", "Sender"})
 public class EcbExchangeRateData {
     private LocalDate date;
-    private List<EcbCurrencyData> exchangeRates;
+    private List<EcbCurrencyData> currencyDataList;
 
     public EcbExchangeRateData() {
-        this.exchangeRates = new ArrayList<>();
+        this.currencyDataList = new ArrayList<>();
     }
 
     @JsonProperty("Cube")
@@ -25,8 +25,8 @@ public class EcbExchangeRateData {
 
 
         List<Map<String, String>> listOfExchangeRates = (List<Map<String, String>>) internalCube.get("Cube");
-        for (Map<String,String> rate: listOfExchangeRates) {
-            this.exchangeRates.add(new EcbCurrencyData(rate.get("currency"), Double.parseDouble(rate.get("rate"))));
+        for (Map<String, String> rate : listOfExchangeRates) {
+            this.currencyDataList.add(new EcbCurrencyData(rate.get("currency"), Double.parseDouble(rate.get("rate"))));
         }
     }
 
@@ -34,8 +34,8 @@ public class EcbExchangeRateData {
         return date;
     }
 
-    public List<EcbCurrencyData> getExchangeRates() {
-        return exchangeRates;
+    public List<EcbCurrencyData> getEcbCurrencyData() {
+        return currencyDataList;
     }
 }
 

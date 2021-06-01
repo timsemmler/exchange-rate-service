@@ -1,0 +1,9 @@
+version: '2.2'
+services:
+  exchange-rate-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: exchange-rate-service
+    ports:
+      - 8080
