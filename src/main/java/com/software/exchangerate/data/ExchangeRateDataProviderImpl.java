@@ -22,7 +22,7 @@ public class ExchangeRateDataProviderImpl implements ExchangeRateDataProvider {
     private Map<LocalDate, Map<String, Currency>> dailyCurrencyValues;
     private String ecbExchangesRatesUrl;
 
-    public ExchangeRateDataProviderImpl(@Value("ecb.exchangerates.url") String ecbExchangesRatesUrl) {
+    public ExchangeRateDataProviderImpl(@Value("${com.software.exchangerates.ecb.url}") String ecbExchangesRatesUrl) {
         this.ecbExchangesRatesUrl = ecbExchangesRatesUrl;
         // Make our dailyCurrencyValues thread-safe
         dailyCurrencyValues = Collections.synchronizedMap(new HashMap<>());

@@ -7,6 +7,7 @@ import com.software.exchangerate.domain.ExchangeRate;
 import com.software.exchangerate.exceptions.DataNotPresentException;
 import com.software.exchangerate.exceptions.ResourceNotFoundException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,8 +61,8 @@ public class ExchangeRateServiceTest {
         currencies.put("EUR", new Currency("EUR", 1d));
         currencies.put("USD", new Currency("USD", 1.2d));
         currencies.put("DKK", new Currency("DKK", 7.5d));
-
         Mockito.when(dataProvider.loadCurrencies()).thenReturn(currencies);
+        Currency.clearAccessCounter();
         exchangeRateService.loadExchangeRateAndIncreaseCounter("EUR", "DKK");
         exchangeRateService.loadExchangeRateAndIncreaseCounter("DKK", "USD");
         Assertions.assertThat(currencies.get("EUR").getAccessCounter()).isEqualTo(1);

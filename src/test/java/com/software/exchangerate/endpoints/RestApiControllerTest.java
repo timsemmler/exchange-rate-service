@@ -1,28 +1,23 @@
 package com.software.exchangerate.endpoints;
 
-import com.software.exchangerate.data.ExchangeRateDataProvider;
-import com.software.exchangerate.data.ExchangeRateDataProviderImpl;
-import com.software.exchangerate.endoints.RestApiController;
-import com.software.exchangerate.service.ExchangeRateServiceImpl;
+
+import com.software.exchangerate.domain.Currency;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -30,43 +25,74 @@ import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import java.time.format.DateTimeFormatter;
 
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(properties = {"com.software.exchangerates.ecb.url=http://localhost:8081"})
 public class RestApiControllerTest {
 
-        @Autowired
+    @Autowired
+    private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
 
     public static MockWebServer mockBackEnd;
 
     @BeforeEach
     void setUpBeforeEach() throws IOException {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         if (mockBackEnd != null) {
             mockBackEnd.shutdown();
         }
         mockBackEnd = new MockWebServer();
-        mockBackEnd.start();
+        mockBackEnd.start(8081);
         mockResponse();
-        String baseUrl = String.format("http://localhost:%s", mockBackEnd.getPort());
     }
 
     @Test
     @DisplayName("Should list all supported currencies when making GET request to endpoint - /rest/currencies")
     void shouldListAllCurrencies() throws Exception {
-        mockMvc.perform(get("/rest/currencies/")).andDo(MockMvcResultHandlers.print());
+        Currency.clearAccessCounter();
+        mockMvc.perform(get("/rest/currencies/"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$", Matchers.hasSize(6)))
+                .andExpect(jsonPath("$[0].name", Matchers.is("JPY")))
+                .andExpect(jsonPath("$[0].rate", Matchers.is(133.79)))
+                .andExpect(jsonPath("$[0].accessCounter", Matchers.is(0)))
+                .andExpect(jsonPath("$[1].name", Matchers.is("DKK")))
+                .andExpect(jsonPath("$[1].rate", Matchers.is(7.4365)))
+                .andExpect(jsonPath("$[1].accessCounter", Matchers.is(0)))
+                .andExpect(jsonPath("$[2].name", Matchers.is("USD")))
+                .andExpect(jsonPath("$[2].rate", Matchers.is(1.2201)))
+                .andExpect(jsonPath("$[2].accessCounter", Matchers.is(0)))
+                .andExpect(jsonPath("$[3].name", Matchers.is("BGN")))
+                .andExpect(jsonPath("$[3].rate", Matchers.is(1.9558)))
+                .andExpect(jsonPath("$[3].accessCounter", Matchers.is(0)))
+                .andExpect(jsonPath("$[4].name", Matchers.is("CZK")))
+                .andExpect(jsonPath("$[4].rate", Matchers.is(25.454)))
+                .andExpect(jsonPath("$[4].accessCounter", Matchers.is(0)))
+                .andExpect(jsonPath("$[5].name", Matchers.is("EUR")))
+                .andExpect(jsonPath("$[5].rate", Matchers.is(1.0)))
+                .andExpect(jsonPath("$[5].accessCounter", Matchers.is(0)));
     }
 
     @Test
-    @DisplayName("Should list all supported currencies when making GET request to endpoint - /rest/currencies")
+    @DisplayName("Should return Exchangerate from DKK to USD when making GET request to endpoint - /rest/exchangerate/DKK/USD")
     void shouldReturnExchangeRate() throws Exception {
-        mockMvc.perform(get("/rest/exchangerate/DKK/USD")).andDo(MockMvcResultHandlers.print());
+        mockMvc.perform(get("/rest/exchangerate/DKK/USD"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.from.name", Matchers.is("DKK")))
+                .andExpect(jsonPath("$.to.name", Matchers.is("USD")))
+                .andExpect(jsonPath("$.chart", Matchers.is("https://www.xe.com/currencycharts/?from=DKK&to=USD")))
+                .andExpect(jsonPath("$.exchangeRate", Matchers.not(0)));
     }
 
     private void mockResponse() {
         try {
-            Resource resource = new ClassPathResource("/testdate/ecbResponse.xml");
+            Resource resource = new ClassPathResource("/testdata/ecbResponse.xml");
             String xml = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
             xml = xml.replace("'[DATE]'", String.format("'%s'", LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
             mockBackEnd.enqueue(new MockResponse()

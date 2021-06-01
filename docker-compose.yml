@@ -6,4 +6,4 @@ services:
       dockerfile: Dockerfile
     image: exchange-rate-service
     ports:
-      - 8080
+      - 8081

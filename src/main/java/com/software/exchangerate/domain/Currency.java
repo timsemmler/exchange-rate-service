@@ -1,12 +1,15 @@
 package com.software.exchangerate.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Currency {
+
     private String name;
     private double rate;
     private static Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<>());
@@ -16,22 +19,33 @@ public class Currency {
         this.rate = rate;
     }
 
+    @JsonView({Views.ExchangeRate.class, Views.SupportetCurrencies.class})
+    public String getName() {
+        return name;
+    }
+
+    @JsonView(Views.SupportetCurrencies.class)
+    public double getRate() {
+        return rate;
+    }
+
+    @JsonView(Views.SupportetCurrencies.class)
+    public int getAccessCounter() {
+        return accessCounter.getOrDefault(name, 0);
+    }
+
     public void incrementAccessCounter() {
         accessCounter.putIfAbsent(name, 0);
         accessCounter.merge(name, 1, Integer::sum);
     }
 
-    public int getAccessCounter() {
-        return accessCounter.getOrDefault(name, 0);
+
+    //We currently only need this for testing purposes.
+    public static void clearAccessCounter() {
+        accessCounter.clear();
     }
 
-    public double getRate() {
-        return rate;
-    }
 
-    public String getName() {
-        return name;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -46,3 +60,6 @@ public class Currency {
         return Objects.hash(name, rate);
     }
 }
+
+
+

@@ -7,5 +7,5 @@ RUN mvn package
 #Run exchange-rate-service
 WORKDIR /usr/src/exchange-rate-service-app
 RUN cp /usr/src/exchange-rate-service-code/target/*.jar ./exchange-rate-service.jar
-EXPOSE 8080
+EXPOSE 8081
 CMD ["java", "-jar", "exchange-rate-service.jar"]
