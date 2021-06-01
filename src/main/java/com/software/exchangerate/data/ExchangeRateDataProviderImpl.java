@@ -3,13 +3,17 @@ package com.software.exchangerate.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.software.exchangerate.domain.Currency;
+import com.software.exchangerate.exceptions.DataNotPresentException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -18,25 +22,27 @@ public class ExchangeRateDataProviderImpl implements ExchangeRateDataProvider {
     private Map<LocalDate, Map<String, Currency>> dailyCurrencyValues;
     private String ecbExchangesRatesUrl;
 
-    public ExchangeRateDataProviderImpl(@Value("ecb.exchangerates.url") String ecbExchangesRatesUrl){
+    public ExchangeRateDataProviderImpl(@Value("ecb.exchangerates.url") String ecbExchangesRatesUrl) {
         this.ecbExchangesRatesUrl = ecbExchangesRatesUrl;
         // Make our dailyCurrencyValues thread-safe
         dailyCurrencyValues = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
-    public Map<String, Currency> loadCurrencies(){
+    public Map<String, Currency> loadCurrencies() {
         Map<String, Currency> currencies;
         LocalDate now = LocalDate.now();
         if (!dailyCurrencyValues.containsKey(now)) {
-            try {
-                EcbExchangeRateData exchangeRateData = convertXmlToExchangeRateData(loadDataFromEcb().block());
-                currencies = createAllCurrenciesFrom(exchangeRateData);
-                dailyCurrencyValues.putIfAbsent(exchangeRateData.getDate(), currencies);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return null;
+            EcbExchangeRateData exchangeRateData = convertXmlToExchangeRateData(loadDataFromEcb().block());
+            if (exchangeRateData == null) {
+                Optional<LocalDate> newestEntryDate = dailyCurrencyValues.keySet().stream().max(LocalDate::compareTo);
+                if (newestEntryDate.isEmpty()) {
+                    throw new DataNotPresentException("Currency Data couldn't be loaded");
+                }
+                return dailyCurrencyValues.get(newestEntryDate.get());
             }
+            currencies = createAllCurrenciesFrom(exchangeRateData);
+            dailyCurrencyValues.putIfAbsent(exchangeRateData.getDate(), currencies);
         } else {
             currencies = dailyCurrencyValues.get(now);
         }
@@ -59,9 +65,15 @@ public class ExchangeRateDataProviderImpl implements ExchangeRateDataProvider {
                 .bodyToMono(String.class);
     }
 
-    private EcbExchangeRateData convertXmlToExchangeRateData(String xmlString) throws JsonProcessingException {
+    private EcbExchangeRateData convertXmlToExchangeRateData(String xmlString) {
+        if (xmlString == null || xmlString.isBlank()) {
+            return null;
+        }
         XmlMapper mapper = new XmlMapper();
-        EcbExchangeRateData data = mapper.readValue(xmlString, EcbExchangeRateData.class);
-        return data;
+        try {
+            return mapper.readValue(xmlString, EcbExchangeRateData.class);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 }

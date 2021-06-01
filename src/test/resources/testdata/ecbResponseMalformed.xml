@@ -7,8 +7,8 @@
     <Cube>
         <Cube time='[DATE]'>
             <Cube currency='USD' rate='1.2201'/>
-            <Cube currency='JPY' rate='133.79'/>
-            <Cube currency='BGN' rate='1.9558'/>
+            <Cube currency='' rate='133.79'/>
+            <Cube currency='BGN' rate=''/>
             <Cube currency='CZK' rate='25.454'/>
             <Cube currency='DKK' rate='7.4365'/>
         </Cube>

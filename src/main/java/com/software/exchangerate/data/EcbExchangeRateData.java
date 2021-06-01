@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonIgnoreProperties(value = {"subject", "Sender"})
 public class EcbExchangeRateData {
@@ -26,7 +27,9 @@ public class EcbExchangeRateData {
 
         List<Map<String, String>> listOfExchangeRates = (List<Map<String, String>>) internalCube.get("Cube");
         for (Map<String, String> rate : listOfExchangeRates) {
-            this.currencyDataList.add(new EcbCurrencyData(rate.get("currency"), Double.parseDouble(rate.get("rate"))));
+            if (!rate.get("currency").isBlank() && !rate.get("rate").isBlank()) {
+                this.currencyDataList.add(new EcbCurrencyData(rate.get("currency"), Double.parseDouble(rate.get("rate"))));
+            }
         }
     }
 

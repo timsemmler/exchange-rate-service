@@ -6,18 +6,16 @@ import com.software.exchangerate.domain.ExchangeRate;
 import com.software.exchangerate.service.ExchangeRateService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
 @RestController
+@ControllerAdvice
 @RequestMapping("/rest/")
 public class RestApiController {
 
-    ExchangeRateService exchangeRateService;
+    private ExchangeRateService exchangeRateService;
 
     public RestApiController(ExchangeRateService exchangeRateService){
         this.exchangeRateService = exchangeRateService;

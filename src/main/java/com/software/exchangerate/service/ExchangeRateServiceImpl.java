@@ -3,6 +3,7 @@ package com.software.exchangerate.service;
 import com.software.exchangerate.data.ExchangeRateDataProvider;
 import com.software.exchangerate.domain.Currency;
 import com.software.exchangerate.domain.ExchangeRate;
+import com.software.exchangerate.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -14,7 +15,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     private ExchangeRateDataProvider dataProvider;
 
-    public ExchangeRateServiceImpl(ExchangeRateDataProvider dataProvider){
+    public ExchangeRateServiceImpl(ExchangeRateDataProvider dataProvider) {
         this.dataProvider = dataProvider;
     }
 
@@ -27,13 +28,12 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     public ExchangeRate loadExchangeRateAndIncreaseCounter(String from, String to) {
         Map<String, Currency> currencies = dataProvider.loadCurrencies();
         if (currencies.containsKey(from) && currencies.containsKey(to)) {
-            ExchangeRate exchangeRate =  new ExchangeRate(currencies.get(from), currencies.get(to));
+            ExchangeRate exchangeRate = new ExchangeRate(currencies.get(from), currencies.get(to));
             exchangeRate.getFrom().incrementAccessCounter();
             exchangeRate.getTo().incrementAccessCounter();
             return exchangeRate;
-
-        } else{
-            throw new IllegalStateException("We need to throw a Custom-Exception here");
+        } else {
+            throw new ResourceNotFoundException(String.format("The exchange rate from %s to %s was not found", from, to));
         }
     }
 }
