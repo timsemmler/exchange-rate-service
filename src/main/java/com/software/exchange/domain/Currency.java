@@ -2,6 +2,7 @@ package com.software.exchange.domain;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +28,11 @@ public class Currency {
     }
 
     public Currency multiplyBy(double factor){
-        return new Currency(name,amount.multiply(BigDecimal.valueOf(factor)).doubleValue());
+        return new Currency(name,amount.multiply(BigDecimal.valueOf(factor)).setScale(8, RoundingMode.HALF_UP).doubleValue());
     }
 
     public Currency divideBy(double divisor){
-        return new Currency(name,amount.divide(BigDecimal.valueOf(divisor)).doubleValue());
+        return new Currency(name,amount.divide(BigDecimal.valueOf(divisor), 8, RoundingMode.HALF_UP).doubleValue());
     }
 
     public int getAccessCounter() {

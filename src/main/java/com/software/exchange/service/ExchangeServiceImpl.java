@@ -6,6 +6,8 @@ import com.software.exchange.domain.Exchange;
 import com.software.exchange.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,16 +22,17 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
-    public Set<Currency> loadAllCurrencies() {
-        Map<String, Exchange> exchangeRates = dataProvider.loadExchanges();
-        return exchangeRates.values().stream().map(Exchange::getTo).collect(Collectors.toSet());
+    public List<Currency> loadAllCurrencies() {
+        return dataProvider.loadExchanges().values()
+                .stream()
+                .map(Exchange::getTo)
+                .sorted(Comparator.comparing(Currency::getName))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Exchange exchangeCurrency(String from, String to, double amount) {
-        Currency fromCurrency = loadExchangeRateByName(from);
-        Currency toCurrency = loadExchangeRateByName(to);
-        Exchange exchange = new Exchange(fromCurrency, toCurrency);
+        Exchange exchange = new Exchange(loadExchangeRateByName(from), loadExchangeRateByName(to));
         exchange.normalize();
         exchange.multiplyBy(amount);
         exchange.getFrom().incrementAccessCounter();

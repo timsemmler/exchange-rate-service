@@ -49,46 +49,65 @@ public class RestApiControllerTest {
     }
 
     @Test
-    @DisplayName("Should list all supported currencies when making GET request to endpoint - /rest/currencies")
+    @DisplayName("Should list all supported currencies when GET - /rest/currencies")
     void shouldListAllCurrencies() throws Exception {
         Currency.clearAccessCounter();
-        mockMvc.perform(get("/rest/currencies/"))
+        mockMvc.perform(get("/rest/currencies"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$", Matchers.hasSize(6)))
-                .andExpect(jsonPath("$[0].name", Matchers.is("JPY")))
-                .andExpect(jsonPath("$[0].amount", Matchers.is(133.79)))
+                .andExpect(jsonPath("$[0].name", Matchers.is("BGN")))
+                .andExpect(jsonPath("$[0].amount", Matchers.is(1.9558)))
                 .andExpect(jsonPath("$[0].accessCounter", Matchers.is(0)))
-                .andExpect(jsonPath("$[1].name", Matchers.is("DKK")))
-                .andExpect(jsonPath("$[1].amount", Matchers.is(7.4365)))
+                .andExpect(jsonPath("$[1].name", Matchers.is("CZK")))
+                .andExpect(jsonPath("$[1].amount", Matchers.is(25.454)))
                 .andExpect(jsonPath("$[1].accessCounter", Matchers.is(0)))
-                .andExpect(jsonPath("$[2].name", Matchers.is("USD")))
-                .andExpect(jsonPath("$[2].amount", Matchers.is(1.2201)))
+                .andExpect(jsonPath("$[2].name", Matchers.is("DKK")))
+                .andExpect(jsonPath("$[2].amount", Matchers.is(7.4365)))
                 .andExpect(jsonPath("$[2].accessCounter", Matchers.is(0)))
-                .andExpect(jsonPath("$[3].name", Matchers.is("BGN")))
-                .andExpect(jsonPath("$[3].amount", Matchers.is(1.9558)))
+                .andExpect(jsonPath("$[3].name", Matchers.is("EUR")))
+                .andExpect(jsonPath("$[3].amount", Matchers.is(1.0)))
                 .andExpect(jsonPath("$[3].accessCounter", Matchers.is(0)))
-                .andExpect(jsonPath("$[4].name", Matchers.is("CZK")))
-                .andExpect(jsonPath("$[4].amount", Matchers.is(25.454)))
+                .andExpect(jsonPath("$[4].name", Matchers.is("JPY")))
+                .andExpect(jsonPath("$[4].amount", Matchers.is(133.79)))
                 .andExpect(jsonPath("$[4].accessCounter", Matchers.is(0)))
-                .andExpect(jsonPath("$[5].name", Matchers.is("EUR")))
-                .andExpect(jsonPath("$[5].amount", Matchers.is(1.0)))
+                .andExpect(jsonPath("$[5].name", Matchers.is("USD")))
+                .andExpect(jsonPath("$[5].amount", Matchers.is(1.2201)))
                 .andExpect(jsonPath("$[5].accessCounter", Matchers.is(0)));
+
+
+
     }
 
     @Test
-    @DisplayName("Should return Exchangerate from DKK to USD when making GET request to endpoint - /rest/exchangerate/DKK/USD")
-    void shouldReturnExchangeRate() throws Exception {
-        mockMvc.perform(get("/rest/exchangerate/DKK/USD"))
+    @DisplayName("Should return Exchange from DKK to USD (1:0.1641) when GET - /rest/currencies/exchange?from=DKK&to=USD")
+    void shouldGetExchangeNormalized() throws Exception {
+        mockMvc.perform(get("/rest/currencies/exchange?from=DKK&to=USD"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.from.name", Matchers.is("DKK")))
+                .andExpect(jsonPath("$.from.amount", Matchers.is(1.0)))
                 .andExpect(jsonPath("$.to.name", Matchers.is("USD")))
-                .andExpect(jsonPath("$.chart", Matchers.is("https://www.xe.com/currencycharts/?from=DKK&to=USD")))
-                .andExpect(jsonPath("$.exchangeRate", Matchers.not(0)));
+                .andExpect(jsonPath("$.to.amount", Matchers.is(0.16406912)))
+                .andExpect(jsonPath("$.chart", Matchers.is("https://www.xe.com/currencycharts/?from=DKK&to=USD")));
     }
+
+    @Test
+    @DisplayName("Should return Exchange from DKK to USD (5.38:0.1641) when GET - /rest/currencies/exchange?from=DKK&to=USD&amount=5.38")
+    void shouldGetExchange() throws Exception {
+        mockMvc.perform(get("/rest/currencies/exchange?from=DKK&to=USD&amount=5.38"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.from.name", Matchers.is("DKK")))
+                .andExpect(jsonPath("$.from.amount", Matchers.is(5.38)))
+                .andExpect(jsonPath("$.to.name", Matchers.is("USD")))
+                .andExpect(jsonPath("$.to.amount", Matchers.is(0.)))
+                .andExpect(jsonPath("$.chart", Matchers.is("https://www.xe.com/currencycharts/?from=DKK&to=USD")));
+    }
+
 
     private void mockResponse() {
         try {

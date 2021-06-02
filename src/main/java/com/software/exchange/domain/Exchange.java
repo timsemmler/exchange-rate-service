@@ -29,9 +29,10 @@ public class Exchange {
     }
 
     public void normalize(){
-        if(from.getAmount() == 1.0d){
-            from = from.divideBy(from.getAmount());
-            to = to.divideBy(to.getAmount());
+        if(from.getAmount() != 1.0d){
+            double divisor = from.getAmount();
+            from = from.divideBy(divisor);
+            to = to.divideBy(divisor);
         }
     }
 
