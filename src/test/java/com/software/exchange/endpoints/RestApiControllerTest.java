@@ -1,7 +1,7 @@
-package com.software.exchangerate.endpoints;
+package com.software.exchange.endpoints;
 
 
-import com.software.exchangerate.domain.Currency;
+import com.software.exchange.domain.Currency;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.hamcrest.Matchers;
@@ -58,22 +58,22 @@ public class RestApiControllerTest {
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
                 .andExpect(jsonPath("$", Matchers.hasSize(6)))
                 .andExpect(jsonPath("$[0].name", Matchers.is("JPY")))
-                .andExpect(jsonPath("$[0].rate", Matchers.is(133.79)))
+                .andExpect(jsonPath("$[0].amount", Matchers.is(133.79)))
                 .andExpect(jsonPath("$[0].accessCounter", Matchers.is(0)))
                 .andExpect(jsonPath("$[1].name", Matchers.is("DKK")))
-                .andExpect(jsonPath("$[1].rate", Matchers.is(7.4365)))
+                .andExpect(jsonPath("$[1].amount", Matchers.is(7.4365)))
                 .andExpect(jsonPath("$[1].accessCounter", Matchers.is(0)))
                 .andExpect(jsonPath("$[2].name", Matchers.is("USD")))
-                .andExpect(jsonPath("$[2].rate", Matchers.is(1.2201)))
+                .andExpect(jsonPath("$[2].amount", Matchers.is(1.2201)))
                 .andExpect(jsonPath("$[2].accessCounter", Matchers.is(0)))
                 .andExpect(jsonPath("$[3].name", Matchers.is("BGN")))
-                .andExpect(jsonPath("$[3].rate", Matchers.is(1.9558)))
+                .andExpect(jsonPath("$[3].amount", Matchers.is(1.9558)))
                 .andExpect(jsonPath("$[3].accessCounter", Matchers.is(0)))
                 .andExpect(jsonPath("$[4].name", Matchers.is("CZK")))
-                .andExpect(jsonPath("$[4].rate", Matchers.is(25.454)))
+                .andExpect(jsonPath("$[4].amount", Matchers.is(25.454)))
                 .andExpect(jsonPath("$[4].accessCounter", Matchers.is(0)))
                 .andExpect(jsonPath("$[5].name", Matchers.is("EUR")))
-                .andExpect(jsonPath("$[5].rate", Matchers.is(1.0)))
+                .andExpect(jsonPath("$[5].amount", Matchers.is(1.0)))
                 .andExpect(jsonPath("$[5].accessCounter", Matchers.is(0)));
     }
 

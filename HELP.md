@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.software..exchangerateservice' is invalid and this project uses 'com.software.exchangerate' instead.
+* The original package name 'com.software..exchangerateservice' is invalid and this project uses 'com.software.exchange' instead.
 
 # Getting Started
 

@@ -1,4 +1,4 @@
-package com.software.exchangerate.domain;
+package com.software.exchange.domain;
 
 public class Views {
     public static class SupportetCurrencies {

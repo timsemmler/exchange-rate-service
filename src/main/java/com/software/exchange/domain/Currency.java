@@ -1,8 +1,7 @@
-package com.software.exchangerate.domain;
+package com.software.exchange.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
-
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,25 +10,30 @@ import java.util.Objects;
 public class Currency {
 
     private String name;
-    private double rate;
+    private BigDecimal amount;
     private static Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<>());
 
-    public Currency(String name, double rate) {
+    public Currency(String name, double amount) {
         this.name = name;
-        this.rate = rate;
+        this.amount = BigDecimal.valueOf(amount);
     }
 
-    @JsonView({Views.ExchangeRate.class, Views.SupportetCurrencies.class})
     public String getName() {
         return name;
     }
 
-    @JsonView(Views.SupportetCurrencies.class)
-    public double getRate() {
-        return rate;
+    public double getAmount() {
+        return amount.doubleValue();
     }
 
-    @JsonView(Views.SupportetCurrencies.class)
+    public Currency multiplyBy(double factor){
+        return new Currency(name,amount.multiply(BigDecimal.valueOf(factor)).doubleValue());
+    }
+
+    public Currency divideBy(double divisor){
+        return new Currency(name,amount.divide(BigDecimal.valueOf(divisor)).doubleValue());
+    }
+
     public int getAccessCounter() {
         return accessCounter.getOrDefault(name, 0);
     }
@@ -45,19 +49,17 @@ public class Currency {
         accessCounter.clear();
     }
 
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency = (Currency) o;
-        return Double.compare(currency.rate, rate) == 0 && name.equals(currency.name);
+        return name.equals(currency.name) && amount.equals(currency.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, rate);
+        return Objects.hash(name, amount);
     }
 }
 

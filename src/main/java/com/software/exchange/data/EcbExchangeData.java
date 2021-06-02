@@ -1,4 +1,4 @@
-package com.software.exchangerate.data;
+package com.software.exchange.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,14 +7,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @JsonIgnoreProperties(value = {"subject", "Sender"})
-public class EcbExchangeRateData {
+public class EcbExchangeData {
     private LocalDate date;
     private List<EcbCurrencyData> currencyDataList;
 
-    public EcbExchangeRateData() {
+    public EcbExchangeData() {
         this.currencyDataList = new ArrayList<>();
     }
 
