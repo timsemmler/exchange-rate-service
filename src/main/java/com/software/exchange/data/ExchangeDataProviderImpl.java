@@ -32,6 +32,7 @@ public class ExchangeDataProviderImpl implements ExchangeDataProvider {
     public Map<String, Exchange> loadExchanges() {
         Map<String, Exchange> exchangeRates;
         LocalDate now = LocalDate.now();
+        //We want to cache the daily exchange-rates so we do a bit of stuff here.
         if (!dailyCurrencyValues.containsKey(now)) {
             EcbExchangeData exchangeRateData = convertXmlToExchangeData(loadDataFromEcb().block());
             if (exchangeRateData == null) {

@@ -28,6 +28,10 @@ public class Exchange {
         return chart;
     }
 
+    public double getExchangeRate(){
+        return to.divideBy(from.getAmount()).getAmount();
+    }
+
     public void normalize(){
         if(from.getAmount() != 1.0d){
             double divisor = from.getAmount();

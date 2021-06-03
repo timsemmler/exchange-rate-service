@@ -22,8 +22,6 @@ public class EcbExchangeData {
         Map internalCube = (Map) cube.get("Cube");
         String timeString = (String) internalCube.get("time");
         this.date = LocalDate.parse(timeString);
-
-
         List<Map<String, String>> listOfExchangeRates = (List<Map<String, String>>) internalCube.get("Cube");
         for (Map<String, String> rate : listOfExchangeRates) {
             if (!rate.get("currency").isBlank() && !rate.get("rate").isBlank()) {

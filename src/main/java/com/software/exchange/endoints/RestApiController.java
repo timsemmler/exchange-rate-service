@@ -1,7 +1,6 @@
 package com.software.exchange.endoints;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.software.exchange.domain.Currency;
 import com.software.exchange.domain.Exchange;
 import com.software.exchange.service.ExchangeService;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @ControllerAdvice
@@ -23,7 +21,7 @@ public class RestApiController {
         this.exchangeRateService = exchangeRateService;
     }
 
-    @GetMapping(value = "currencies/exchange", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "currencies/exchange",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Exchange> getExchange(@RequestParam String from, @RequestParam String to, @RequestParam(defaultValue = "1.0") double amount) {
         Exchange exchange = exchangeRateService.exchangeCurrency(from, to, amount);
         return ResponseEntity.ok(exchange);

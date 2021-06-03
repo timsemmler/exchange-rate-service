@@ -80,6 +80,7 @@ public class ExchangeServiceTest {
 
         Exchange exchange = exchangeRateService.exchangeCurrency("USD", "DKK", 1.0d);
         Assertions.assertThat(exchange).isNotNull();
+        Assertions.assertThat(exchange.getExchangeRate()).isEqualTo(2d);
         Assertions.assertThat(exchange.getFrom().getName()).isEqualTo("USD");
         Assertions.assertThat(exchange.getTo().getName()).isEqualTo("DKK");
         Assertions.assertThat(exchange.getTo().getAmount()).isEqualTo(2.0d);
@@ -87,6 +88,7 @@ public class ExchangeServiceTest {
 
         Exchange exchangeRateReversed = exchangeRateService.exchangeCurrency("DKK", "USD", 1.0d);
         Assertions.assertThat(exchangeRateReversed).isNotNull();
+        Assertions.assertThat(exchangeRateReversed.getExchangeRate()).isEqualTo(0.5d);
         Assertions.assertThat(exchangeRateReversed.getFrom().getName()).isEqualTo("DKK");
         Assertions.assertThat(exchangeRateReversed.getTo().getName()).isEqualTo("USD");
         Assertions.assertThat(exchangeRateReversed.getTo().getAmount()).isEqualTo(0.5d);
@@ -104,6 +106,7 @@ public class ExchangeServiceTest {
 
         Exchange exchange = exchangeRateService.exchangeCurrency("USD", "DKK", 2.5d);
         Assertions.assertThat(exchange).isNotNull();
+        Assertions.assertThat(exchange.getExchangeRate()).isEqualTo(2d);
         Assertions.assertThat(exchange.getFrom().getName()).isEqualTo("USD");
         Assertions.assertThat(exchange.getTo().getName()).isEqualTo("DKK");
         Assertions.assertThat(exchange.getTo().getAmount()).isEqualTo(5d);

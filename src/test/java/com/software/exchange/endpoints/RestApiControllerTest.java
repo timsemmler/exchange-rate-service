@@ -22,11 +22,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.format.DateTimeFormatter;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(properties = {"com.software.exchangerates.ecb.url=http://localhost:8081"})
 public class RestApiControllerTest {
@@ -87,6 +86,7 @@ public class RestApiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.exchangeRate", Matchers.is(0.16406912)))
                 .andExpect(jsonPath("$.from.name", Matchers.is("DKK")))
                 .andExpect(jsonPath("$.from.amount", Matchers.is(1.0)))
                 .andExpect(jsonPath("$.to.name", Matchers.is("USD")))
@@ -101,10 +101,11 @@ public class RestApiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.exchangeRate", Matchers.is(0.16406912)))
                 .andExpect(jsonPath("$.from.name", Matchers.is("DKK")))
                 .andExpect(jsonPath("$.from.amount", Matchers.is(5.38)))
                 .andExpect(jsonPath("$.to.name", Matchers.is("USD")))
-                .andExpect(jsonPath("$.to.amount", Matchers.is(0.)))
+                .andExpect(jsonPath("$.to.amount", Matchers.is(0.88269187)))
                 .andExpect(jsonPath("$.chart", Matchers.is("https://www.xe.com/currencycharts/?from=DKK&to=USD")));
     }
 
