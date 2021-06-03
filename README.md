@@ -49,3 +49,7 @@ in from or to parameter is not supported. In addition this Endpoint is returning
         "chart":"https://www.xe.com/currencycharts/?from=USD&to=DKK",
         "exchangeRate":6.10199393
 }
+
+## Known Bug
+Unluckily the ErrorResponses are rendered as XML by default. Don't know why yet and haven't found out a clean solution for that.
+It's probably due to the Jackson usage in the backend. I think I need to write some Custom-Configuration-Code for that.
